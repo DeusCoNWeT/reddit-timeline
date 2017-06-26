@@ -164,7 +164,7 @@ Polymer component to show your favourite subreddits feed
         border: 1px solid #d2d2d2;
         padding: 8px 12px;
         background-color: #fefefe;
-        box-shadow:2px 2px 8px #d2d2d2;
+        box-shadow: 2px 2px 8px #d2d2d2;
       }
 
       .detail hr {
@@ -261,7 +261,7 @@ Polymer component to show your favourite subreddits feed
 
       .stats a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       .subreddit {
@@ -278,7 +278,7 @@ Polymer component to show your favourite subreddits feed
 
       .subreddit a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       paper-button {
@@ -747,6 +747,10 @@ Polymer component to show your favourite subreddits feed
         feed: {
           type: Array,
           value: function () { return [] }
+        },
+        latency: {
+          type: Number,
+          value: 2000
         }
       },
 
@@ -794,26 +798,31 @@ Polymer component to show your favourite subreddits feed
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
         this.fire('reddit-timeline-token', { access_token: this.token });
-        if (this.recall_subreddits) {
-          this.$.get_subreddits.generateRequest();
-          this.recall_subreddits = false;
-        }
-        if (this.recall_posts) {
-          this.$.get_posts.generateRequest();
-          this.recall_posts = false;
-        }
+        window.setTimeout(function () {
+          if (this.recall_subreddits) {
+            this.$.get_subreddits.generateRequest();
+            this.recall_subreddits = false;
+          }
+          if (this.recall_posts) {
+            this.$.get_posts.generateRequest();
+            this.recall_posts = false;
+          }
+        }.bind(this), this.latency)
       },
 
       _subreddits_received: function (event, detail) {
         var subreddits = detail.response.data.children;
-        if (subreddits.length > 0) {
-          for (var i = 0; i < subreddits.length; i++) {
-            if (i == 0) this.subreddits = subreddits[i].data.display_name;
-            else this.subreddits += "+" + subreddits[i].data.display_name;
+        window.setTimeout(function () {
+          this.fire('reddit-timeline-subscription', { subreddit: subreddits });
+          if (subreddits.length > 0) {
+            for (var i = 0; i < subreddits.length; i++) {
+              if (i == 0) this.subreddits = subreddits[i].data.display_name;
+              else this.subreddits += "+" + subreddits[i].data.display_name;
+            }
+            this.subreddit = this.subreddits;
           }
-          this.subreddit = this.subreddits;
-        }
-        this.$.get_posts.generateRequest();
+          this.$.get_posts.generateRequest();
+        }.bind(this), this.latency);
       },
 
       _subreddit_error: function (event, detail) {
@@ -824,8 +833,11 @@ Polymer component to show your favourite subreddits feed
       },
 
       _posts_received: function (event, detail) {
-        this.feed = detail.response.data.children;
-        this.after = detail.response.data.after;
+        window.setTimeout(function () {
+          this.feed = detail.response.data.children;
+          this.after = detail.response.data.after;
+          this.fire('reddit-timeline-posts', { data: detail.response.date });
+        }.bind(this), this.latency);
       },
 
       _posts_error: function (event, detail) {
