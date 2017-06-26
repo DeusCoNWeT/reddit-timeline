@@ -164,7 +164,7 @@ Polymer component to show your favourite subreddits feed
         border: 1px solid #d2d2d2;
         padding: 8px 12px;
         background-color: #fefefe;
-        box-shadow:2px 2px 8px #d2d2d2;
+        box-shadow: 2px 2px 8px #d2d2d2;
       }
 
       .detail hr {
@@ -261,7 +261,7 @@ Polymer component to show your favourite subreddits feed
 
       .stats a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       .subreddit {
@@ -278,7 +278,7 @@ Polymer component to show your favourite subreddits feed
 
       .subreddit a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       paper-button {
@@ -746,7 +746,17 @@ Polymer component to show your favourite subreddits feed
         },
         feed: {
           type: Array,
-          value: function () { return [] }
+          value: function () {
+            return []
+          }
+        },
+        latency: {
+          type: Number,
+          value: 2000
+        },
+        refresh_time: {
+          type: Number,
+          value: 60000
         }
       },
 
@@ -775,45 +785,64 @@ Polymer component to show your favourite subreddits feed
 
       /* COMPUTED PROPERTIES*/
       _get_api_headers: function (token) {
-        return { Authorization: 'Bearer ' + token };
+        return {
+          Authorization: 'Bearer ' + token
+        };
       },
 
       _get_token_headers: function (client_id, client_secret) {
-        return { Authorization: "Basic " + btoa(client_id + ":" + client_secret) };
+        return {
+          Authorization: "Basic " + btoa(client_id + ":" + client_secret)
+        };
       },
 
       _get_posts_params: function (POSTS_LIMIT, after) {
-        return { limit: POSTS_LIMIT, after: after };
+        return {
+          limit: POSTS_LIMIT,
+          after: after
+        };
       },
 
       _get_token_params: function (refresh_token) {
-        return { grant_type: "refresh_token", refresh_token: refresh_token };
+        return {
+          grant_type: "refresh_token",
+          refresh_token: refresh_token
+        };
       },
 
       /* Request acces token*/
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
-        this.fire('reddit-timeline-token', { access_token: this.token });
-        if (this.recall_subreddits) {
-          this.$.get_subreddits.generateRequest();
-          this.recall_subreddits = false;
-        }
-        if (this.recall_posts) {
-          this.$.get_posts.generateRequest();
-          this.recall_posts = false;
-        }
+        this.fire('reddit-timeline-token', {
+          access_token: this.token
+        });
+        window.setTimeout(function () {
+          if (this.recall_subreddits) {
+            this.$.get_subreddits.generateRequest();
+            this.recall_subreddits = false;
+          }
+          if (this.recall_posts) {
+            this.$.get_posts.generateRequest();
+            this.recall_posts = false;
+          }
+        }.bind(this), this.latency)
       },
 
       _subreddits_received: function (event, detail) {
         var subreddits = detail.response.data.children;
-        if (subreddits.length > 0) {
-          for (var i = 0; i < subreddits.length; i++) {
-            if (i == 0) this.subreddits = subreddits[i].data.display_name;
-            else this.subreddits += "+" + subreddits[i].data.display_name;
+        window.setTimeout(function () {
+          this.fire('reddit-timeline-subscription', {
+            subreddit: subreddits
+          });
+          if (subreddits.length > 0) {
+            for (var i = 0; i < subreddits.length; i++) {
+              if (i == 0) this.subreddits = subreddits[i].data.display_name;
+              else this.subreddits += "+" + subreddits[i].data.display_name;
+            }
+            this.subreddit = this.subreddits;
           }
-          this.subreddit = this.subreddits;
-        }
-        this.$.get_posts.generateRequest();
+          this.$.get_posts.generateRequest();
+        }.bind(this), this.latency);
       },
 
       _subreddit_error: function (event, detail) {
@@ -824,8 +853,13 @@ Polymer component to show your favourite subreddits feed
       },
 
       _posts_received: function (event, detail) {
-        this.feed = detail.response.data.children;
-        this.after = detail.response.data.after;
+        window.setTimeout(function () {
+          this.feed = detail.response.data.children;
+          this.after = detail.response.data.after;
+          this.fire('reddit-timeline-posts', {
+            data: detail.response.date
+          });
+        }.bind(this), this.latency);
       },
 
       _posts_error: function (event, detail) {
@@ -890,8 +924,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = true;
             var splitted = item.data.media.oembed.thumbnail_url.split('/');
             item.video = splitted[splitted.length - 2];
-          }
-          else {
+          } else {
             item.detail = item.data.thumbnail;
             if (item.detail == 'default') {
               item.detail = this.component_base + "default_gif.png";
@@ -899,8 +932,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = false;
           }
           has = true;
-        }
-        else if (item.data.preview) {
+        } else if (item.data.preview) {
           if (item.data.preview.images[0].variants.gif) {
             item.media = item.data.preview.images[0].variants.gif.source.url;
             item.detail = item.data.thumbnail;
@@ -937,8 +969,7 @@ Polymer component to show your favourite subreddits feed
           this.$.feed_template.render();
           this.after = this.cache[this.cursor + 1].after;
           this.feed = this.cache[this.cursor + 1].feed;
-        }
-        else {
+        } else {
           this.cache[this.cursor] = {};
           this.cache[this.cursor].after = this.after;
           this.cache[this.cursor].feed = this.feed;
@@ -982,14 +1013,12 @@ Polymer component to show your favourite subreddits feed
       _logged: function () {
         this.$.get_subreddits.generateRequest();
       },
-
       attached: function () {
-        this.$['dropdown-content'].style.right = "-155px";
+        this._interval = window.setInterval(this.refresh.bind(this), this.refresh_time);
       },
-
-
-
-
+      detached: function () {
+        window.clearInterval(this._interval);
+      }
     });
   </script>
 </dom-module>
