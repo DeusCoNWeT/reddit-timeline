@@ -164,7 +164,7 @@ Polymer component to show your favourite subreddits feed
         border: 1px solid #d2d2d2;
         padding: 8px 12px;
         background-color: #fefefe;
-        box-shadow:2px 2px 8px #d2d2d2;
+        box-shadow: 2px 2px 8px #d2d2d2;
       }
 
       .detail hr {
@@ -261,7 +261,7 @@ Polymer component to show your favourite subreddits feed
 
       .stats a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       .subreddit {
@@ -278,7 +278,7 @@ Polymer component to show your favourite subreddits feed
 
       .subreddit a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       paper-button {
@@ -545,7 +545,7 @@ Polymer component to show your favourite subreddits feed
       }
     </style>
     <!-- HEADER -->
-    <paper-header-panel mode="seamed" class="header">
+    <paper-header-panel mode="seamed" class="header" on-content-scroll="scrolled">
       <paper-toolbar class="paper-header">
         <paper-icon-button class="cursors" icon="icons:arrow-back" on-click="back" hidden="{{!view_detail}}"></paper-icon-button>
         <paper-icon-button icon="menu" class="menu" on-click="toggle" hidden="{{view_detail}}"></paper-icon-button>
@@ -565,7 +565,7 @@ Polymer component to show your favourite subreddits feed
       <paper-button raised class="item" on-click="top">{{words.top}}</paper-button>
     </paper-menu>
     <!-- MAIN CONTENT -->
-    <div class="content">
+    <div class="content" on-scroll="scrolled">
       <template id="feed_template" is="dom-repeat" items="[[feed]]">
         <div class="post" hidden="{{view_detail}}">
           <template is="dom-if" if="{{hasMedia(item)}}">
@@ -746,7 +746,17 @@ Polymer component to show your favourite subreddits feed
         },
         feed: {
           type: Array,
-          value: function () { return [] }
+          value: function () {
+            return []
+          }
+        },
+        discardStepNumber: {
+          value: 7,
+          type: Number
+        },
+        step: {
+          value: 0,
+          type: Number
         }
       },
 
@@ -775,25 +785,37 @@ Polymer component to show your favourite subreddits feed
 
       /* COMPUTED PROPERTIES*/
       _get_api_headers: function (token) {
-        return { Authorization: 'Bearer ' + token };
+        return {
+          Authorization: 'Bearer ' + token
+        };
       },
 
       _get_token_headers: function (client_id, client_secret) {
-        return { Authorization: "Basic " + btoa(client_id + ":" + client_secret) };
+        return {
+          Authorization: "Basic " + btoa(client_id + ":" + client_secret)
+        };
       },
 
       _get_posts_params: function (POSTS_LIMIT, after) {
-        return { limit: POSTS_LIMIT, after: after };
+        return {
+          limit: POSTS_LIMIT,
+          after: after
+        };
       },
 
       _get_token_params: function (refresh_token) {
-        return { grant_type: "refresh_token", refresh_token: refresh_token };
+        return {
+          grant_type: "refresh_token",
+          refresh_token: refresh_token
+        };
       },
 
       /* Request acces token*/
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
-        this.fire('reddit-timeline-token', { access_token: this.token });
+        this.fire('reddit-timeline-token', {
+          access_token: this.token
+        });
         if (this.recall_subreddits) {
           this.$.get_subreddits.generateRequest();
           this.recall_subreddits = false;
@@ -890,8 +912,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = true;
             var splitted = item.data.media.oembed.thumbnail_url.split('/');
             item.video = splitted[splitted.length - 2];
-          }
-          else {
+          } else {
             item.detail = item.data.thumbnail;
             if (item.detail == 'default') {
               item.detail = this.component_base + "default_gif.png";
@@ -899,8 +920,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = false;
           }
           has = true;
-        }
-        else if (item.data.preview) {
+        } else if (item.data.preview) {
           if (item.data.preview.images[0].variants.gif) {
             item.media = item.data.preview.images[0].variants.gif.source.url;
             item.detail = item.data.thumbnail;
@@ -937,8 +957,7 @@ Polymer component to show your favourite subreddits feed
           this.$.feed_template.render();
           this.after = this.cache[this.cursor + 1].after;
           this.feed = this.cache[this.cursor + 1].feed;
-        }
-        else {
+        } else {
           this.cache[this.cursor] = {};
           this.cache[this.cursor].after = this.after;
           this.cache[this.cursor].feed = this.feed;
@@ -986,10 +1005,120 @@ Polymer component to show your favourite subreddits feed
       attached: function () {
         this.$['dropdown-content'].style.right = "-155px";
       },
-
-
-
-
+      decrease_maintenance: function () {
+        var a = 1;
+        var b = 2;
+        var c = 3;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+        a = a && b ? a : c;
+      },
+      scrolled: function (evt) {
+        this.step += 1;
+        var el = evt.currentTarget;
+        if (!this.discardStepNumber || this.step < this.discardStepNumber) {
+          this.lastValidScroll = el.scrollTop;
+        } else {
+          el.scrollTop = this.lastValidScroll;
+          this.step = 0;
+        }
+      },
     });
   </script>
 </dom-module>
