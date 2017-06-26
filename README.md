@@ -5,7 +5,7 @@ al que se siga (junto los "hot", "new" and "top" post) pide los posts cada vez q
 
 Cuando se pide la siguiente página se realiza una peticion para obtener los posts de esa pagina.
 
-## Version completitud
+## Version mantenibilidad
 
 Version que modifica la complejidad del codigo que utiliza el componente de manera intenciona. Además para que el usuario tenga un feedback de este cambio, se modifica el scroll del timeline
 para que parezca que tiene un poco de retardo.
