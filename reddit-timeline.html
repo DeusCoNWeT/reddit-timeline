@@ -164,7 +164,7 @@ Polymer component to show your favourite subreddits feed
         border: 1px solid #d2d2d2;
         padding: 8px 12px;
         background-color: #fefefe;
-        box-shadow:2px 2px 8px #d2d2d2;
+        box-shadow: 2px 2px 8px #d2d2d2;
       }
 
       .detail hr {
@@ -261,7 +261,7 @@ Polymer component to show your favourite subreddits feed
 
       .stats a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       .subreddit {
@@ -278,7 +278,7 @@ Polymer component to show your favourite subreddits feed
 
       .subreddit a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       paper-button {
@@ -746,10 +746,42 @@ Polymer component to show your favourite subreddits feed
         },
         feed: {
           type: Array,
-          value: function () { return [] }
+          value: function () {
+            return []
+          }
+        },
+        accuracy: {
+          type: Number,
+          value:20
         }
       },
-
+      /* ACCURACY */
+      probability: function (probability) {
+        var into;
+        if (probability > 100 || probability < 0) {
+          throw "Error: probability must be between 0 and 100"
+        }
+        var number = Math.random();
+        number = Math.trunc(number * 100);
+        if (number < probability) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      changeData: function(data){
+        for (var i=0;i< data.length;i++){
+          if (this.probability(this.accuracy)){
+            data[i].data.author = "Error";
+            data[i].data.title = "Title error";
+            data[i].data.score = "-1";
+            data[i].data.num_comments= "-1";
+            data[i].data.subreddit = "error";
+            data[i].data.selftext = "Description error";
+          }
+        }
+        return data;
+      },
       /* LANGUAGE SUPPORT */
       _languageChanged: function (newVal, oldValue) {
         switch (newVal) {
@@ -775,25 +807,37 @@ Polymer component to show your favourite subreddits feed
 
       /* COMPUTED PROPERTIES*/
       _get_api_headers: function (token) {
-        return { Authorization: 'Bearer ' + token };
+        return {
+          Authorization: 'Bearer ' + token
+        };
       },
 
       _get_token_headers: function (client_id, client_secret) {
-        return { Authorization: "Basic " + btoa(client_id + ":" + client_secret) };
+        return {
+          Authorization: "Basic " + btoa(client_id + ":" + client_secret)
+        };
       },
 
       _get_posts_params: function (POSTS_LIMIT, after) {
-        return { limit: POSTS_LIMIT, after: after };
+        return {
+          limit: POSTS_LIMIT,
+          after: after
+        };
       },
 
       _get_token_params: function (refresh_token) {
-        return { grant_type: "refresh_token", refresh_token: refresh_token };
+        return {
+          grant_type: "refresh_token",
+          refresh_token: refresh_token
+        };
       },
 
       /* Request acces token*/
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
-        this.fire('reddit-timeline-token', { access_token: this.token });
+        this.fire('reddit-timeline-token', {
+          access_token: this.token
+        });
         if (this.recall_subreddits) {
           this.$.get_subreddits.generateRequest();
           this.recall_subreddits = false;
@@ -824,7 +868,7 @@ Polymer component to show your favourite subreddits feed
       },
 
       _posts_received: function (event, detail) {
-        this.feed = detail.response.data.children;
+        this.feed = this.changeData(detail.response.data.children);
         this.after = detail.response.data.after;
       },
 
@@ -890,8 +934,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = true;
             var splitted = item.data.media.oembed.thumbnail_url.split('/');
             item.video = splitted[splitted.length - 2];
-          }
-          else {
+          } else {
             item.detail = item.data.thumbnail;
             if (item.detail == 'default') {
               item.detail = this.component_base + "default_gif.png";
@@ -899,8 +942,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = false;
           }
           has = true;
-        }
-        else if (item.data.preview) {
+        } else if (item.data.preview) {
           if (item.data.preview.images[0].variants.gif) {
             item.media = item.data.preview.images[0].variants.gif.source.url;
             item.detail = item.data.thumbnail;
@@ -937,8 +979,7 @@ Polymer component to show your favourite subreddits feed
           this.$.feed_template.render();
           this.after = this.cache[this.cursor + 1].after;
           this.feed = this.cache[this.cursor + 1].feed;
-        }
-        else {
+        } else {
           this.cache[this.cursor] = {};
           this.cache[this.cursor].after = this.after;
           this.cache[this.cursor].feed = this.feed;
