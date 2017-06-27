@@ -180,10 +180,16 @@ Polymer component to show your favourite subreddits feed
       .playBig {
         position: absolute;
         z-index: 1;
-        right: 5px;
+        margin:0;
         bottom: 25px;
+        right: 25px;
         background: none;
-        fill: var(--paper-grey-400);
+        fill: #bdbdbd;
+        color: #333;
+        border: 2px solid #333;
+        border-radius: 100%;
+        padding: 1px 1px 1px 4px;
+        font-size: 24px;
       }
 
       .commentIcon {
@@ -201,10 +207,13 @@ Polymer component to show your favourite subreddits feed
       .play {
         position: absolute;
         z-index: 1;
-        left: 43px;
-        top: 49px;
+        left: 45px;
+        top: 35px;
         background: none;
-        fill: var(--paper-grey-400);
+        color: #bdbdbd;
+        border: 1px solid #bdbdbd;
+        border-radius: 100%;
+        padding: 1px 1px 1px 2px;
       }
 
       .postContent {
@@ -329,11 +338,11 @@ Polymer component to show your favourite subreddits feed
       .cursors {
         padding: 0;
         margin: 8px;
-        --paper-icon-button: {
-          width: 18px;
-          height: 18px;
-          color: white;
-        }
+        font-weight: bold;
+      }
+      .cursors:hover{
+        color:#FF5722;
+        cursor: pointer;
       }
       /* LOADING */
 
@@ -550,14 +559,14 @@ Polymer component to show your favourite subreddits feed
     <!-- HEADER -->
     <paper-header-panel mode="seamed" class="header">
       <paper-toolbar class="paper-header">
-        <paper-icon-button class="cursors" icon="icons:arrow-back" on-click="back" hidden="{{!view_detail}}"></paper-icon-button>
+        <p class="cursors" on-click="back" hidden="{{!view_detail}}">🡠</p>
         <paper-icon-button icon="menu" class="menu" on-click="toggle" hidden="{{view_detail}}"></paper-icon-button>
         <img alt="logo" src="reddit-icon.png" class="icon"></img>
         <span class="title flex">{{words.title}}</span>
         <paper-icon-button icon="refresh" on-click="refresh" hidden="{{view_detail}}"></paper-icon-button>
-        <paper-icon-button class="cursors" icon="icons:arrow-back" on-click="before" hidden="{{view_detail}}"></paper-icon-button>
+        <p class="cursors" on-click="before" hidden="{{view_detail}}">🡠</p>
         <span hidden="{{view_detail}}">{{cursor}}</span>
-        <paper-icon-button class="cursors" icon="icons:arrow-forward" on-click="next" hidden="{{view_detail}}"></paper-icon-button>
+        <p class="cursors" on-click="next" hidden="{{view_detail}}">🡢</p>
       </paper-toolbar>
     </paper-header-panel>
     <paper-menu id="dropdown-content" class="dropdown-content" hidden="{{view_detail}}">
@@ -574,8 +583,7 @@ Polymer component to show your favourite subreddits feed
           <template is="dom-if" if="{{hasMedia(item)}}">
             <a target="_blank" href="{{item.media}}">
               <img  alt="preview" class="preview" src="{{item.detail}}">
-              <iron-icon class="play" icon="av:play-circle-outline"> 
-              </iron-icon>
+              <p class="play" >►</p>
             </a>
           </template>
           <template is="dom-if" if="{{!hasMedia(item)}}">
@@ -630,10 +638,9 @@ Polymer component to show your favourite subreddits feed
           </google-youtube>
         </template>
         <template is="dom-if" if="{{!item.hasVideo}}">
-          <a target="_blank" href="{{item.media}}">
+          <a target="_blank" href="{{item.media}}" style="position:relative">
               <img alt="preview" class="previewBig" src="{{item.detail}}">
-              <iron-icon class="playBig" icon="av:play-circle-outline"> 
-              </iron-icon>
+              <p class="playBig" >►</p>
             </a>
         </template>
       </template>
