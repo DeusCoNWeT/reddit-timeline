@@ -21,22 +21,6 @@ Polymer component to show your favourite subreddits feed
 
 <dom-module id="reddit-timeline">
   <template>
-
-    <iron-ajax id="refresh_token" url="https://www.reddit.com/api/v1/access_token" method="POST" headers="{{_token_headers}}"
-      params="{{_token_params}}" handle-as='json' on-response="_token_received">
-    </iron-ajax>
-
-    <iron-ajax id="get_subreddits" url="https://oauth.reddit.com/subreddits/mine/subscriber" method="GET" headers="{{_api_headers}}"
-      handle-as='json' on-response="_subreddits_received" on-error="_subreddit_error">
-    </iron-ajax>
-
-    <iron-ajax id="get_posts" url="https://oauth.reddit.com/r/{{subreddit}}/{{list}}" headers="{{_api_headers}}" params="{{_posts_params}}"
-      handle-as='json' on-response="_posts_received" on-error="_posts_error">
-    </iron-ajax>
-
-    <iron-ajax id="requestLanguage" url="{{languageUrl}}" method="GET" handleAs="json" on-response="_language_response">
-    </iron-ajax>
-
     <style>
        :host {
         display: block;
@@ -72,7 +56,7 @@ Polymer component to show your favourite subreddits feed
         text-transform: none;
         z-index: 100000;
         --paper-toolbar-background: -webkit-linear-gradient(top, #2196F3, #64B5F6);
-        color:white;
+        color: white;
       }
 
       .menu {
@@ -166,7 +150,7 @@ Polymer component to show your favourite subreddits feed
         border: 1px solid #d2d2d2;
         padding: 8px 12px;
         background-color: #fefefe;
-        box-shadow:2px 2px 8px #d2d2d2;
+        box-shadow: 2px 2px 8px #d2d2d2;
       }
 
       .detail hr {
@@ -263,7 +247,7 @@ Polymer component to show your favourite subreddits feed
 
       .stats a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       .subreddit {
@@ -280,7 +264,7 @@ Polymer component to show your favourite subreddits feed
 
       .subreddit a:hover {
         border-radius: 3px;
-        color:#FF5722 !important;
+        color: #FF5722 !important;
       }
 
       paper-button {
@@ -348,7 +332,7 @@ Polymer component to show your favourite subreddits feed
         --paper-icon-button: {
           width: 18px;
           height: 18px;
-          color:white;
+          color: white;
         }
       }
       /* LOADING */
@@ -547,6 +531,22 @@ Polymer component to show your favourite subreddits feed
         }
       }
     </style>
+    <iron-ajax id="refresh_token" url="https://www.reddit.com/api/v1/access_token" method="POST" headers="{{_token_headers}}"
+      params="{{_token_params}}" handle-as='json' on-response="_token_received">
+    </iron-ajax>
+
+    <iron-ajax id="get_subreddits" url="https://oauth.reddit.com/subreddits/mine/subscriber" method="GET" headers="{{_api_headers}}"
+      handle-as='json' on-response="_subreddits_received" on-error="_subreddit_error">
+    </iron-ajax>
+
+    <iron-ajax id="get_posts" url="https://oauth.reddit.com/r/{{subreddit}}/{{list}}" headers="{{_api_headers}}" params="{{_posts_params}}"
+      handle-as='json' on-response="_posts_received" on-error="_posts_error">
+    </iron-ajax>
+
+    <iron-ajax id="requestLanguage" url="{{languageUrl}}" method="GET" handleAs="json" on-response="_language_response">
+    </iron-ajax>
+
+
     <!-- HEADER -->
     <paper-header-panel mode="seamed" class="header">
       <paper-toolbar class="paper-header">
@@ -567,7 +567,6 @@ Polymer component to show your favourite subreddits feed
       <div class="divisor"></div>
       <paper-button raised class="item" on-click="top">{{words.top}}</paper-button>
     </paper-menu>
-    <!-- MAIN CONTENT -->
     <div class="content">
       <template id="feed_template" is="dom-repeat" items="[[feed]]">
         <div class="post" hidden="{{view_detail}}">
@@ -605,54 +604,55 @@ Polymer component to show your favourite subreddits feed
               </a>
             </div>
           </div>
-      </template>
-      <template is="dom-if" if="[[!feed.length]]">
-        <div class="cssload-thecube">
-          <div class="cssload-cube cssload-c1"></div>
-          <div class="cssload-cube cssload-c2"></div>
-          <div class="cssload-cube cssload-c4"></div>
-          <div class="cssload-cube cssload-c3"></div>
         </div>
       </template>
-      <div class="detail vertical layout" hidden="{{!view_detail}}">
+    </div>
+    <template is="dom-if" if="[[!feed.length]]">
+      <div class="cssload-thecube">
+        <div class="cssload-cube cssload-c1"></div>
+        <div class="cssload-cube cssload-c2"></div>
+        <div class="cssload-cube cssload-c4"></div>
+        <div class="cssload-cube cssload-c3"></div>
+      </div>
+    </template>
+    <div class="detail vertical layout" hidden="{{!view_detail}}">
 
-        <a target="_blank" href="{{getLink(item)}}">
+      <a target="_blank" href="{{getLink(item)}}">
           <span class="title">{{item.data.title}}</span>
         </a>
-        <span class="author">{{item.data.author}}</span>
-        <hr>
-        <div hidden="{{!item.data.selftext}}" class="description flex">{{item.data.selftext}}</div>
+      <span class="author">{{item.data.author}}</span>
+      <hr>
+      <div hidden="{{!item.data.selftext}}" class="description flex">{{item.data.selftext}}</div>
 
-        <template id="media_template" is="dom-if" if="{{hasMedia(item)}}">
-          <template is="dom-if" if="{{item.hasVideo}}" restamp>
-            <google-youtube class="previewBig" video-id="{{item.video}}">
-            </google-youtube>
-          </template>
-          <template is="dom-if" if="{{!item.hasVideo}}">
-            <a target="_blank" href="{{item.media}}">
+      <template id="media_template" is="dom-if" if="{{hasMedia(item)}}">
+        <template is="dom-if" if="{{item.hasVideo}}" restamp>
+          <google-youtube class="previewBig" video-id="{{item.video}}">
+          </google-youtube>
+        </template>
+        <template is="dom-if" if="{{!item.hasVideo}}">
+          <a target="_blank" href="{{item.media}}">
               <img class="previewBig" src="{{item.detail}}">
               <iron-icon class="playBig" icon="av:play-circle-outline"> 
               </iron-icon>
             </a>
-          </template>
         </template>
-        <template is="dom-if" if="{{!hasMedia(item)}}">
-          <template is="dom-if" if="{{hasPreview(item)}}">
-            <a target="_blank" href="{{item.url}}">
+      </template>
+      <template is="dom-if" if="{{!hasMedia(item)}}">
+        <template is="dom-if" if="{{hasPreview(item)}}">
+          <a target="_blank" href="{{item.url}}">
               <img class="previewBig" src="{{item.image}}">
             </a>
-          </template>
         </template>
+      </template>
 
-        <br>
-        <div class="statsBig">
-          <a id="comments" target="_blank" href="{{getLink(item)}}">
+      <br>
+      <div class="statsBig">
+        <a id="comments" target="_blank" href="{{getLink(item)}}">
             <span class="comments">{{words.comments}}: {{item.data.num_comments}}</span>
           </a>
-        </div>
+      </div>
 
-      </div>
-      </div>
+    </div>
   </template>
 
   <script>
@@ -749,7 +749,9 @@ Polymer component to show your favourite subreddits feed
         },
         feed: {
           type: Array,
-          value: function () { return [] }
+          value: function () {
+            return []
+          }
         }
       },
 
@@ -778,25 +780,37 @@ Polymer component to show your favourite subreddits feed
 
       /* COMPUTED PROPERTIES*/
       _get_api_headers: function (token) {
-        return { Authorization: 'Bearer ' + token };
+        return {
+          Authorization: 'Bearer ' + token
+        };
       },
 
       _get_token_headers: function (client_id, client_secret) {
-        return { Authorization: "Basic " + btoa(client_id + ":" + client_secret) };
+        return {
+          Authorization: "Basic " + btoa(client_id + ":" + client_secret)
+        };
       },
 
       _get_posts_params: function (POSTS_LIMIT, after) {
-        return { limit: POSTS_LIMIT, after: after };
+        return {
+          limit: POSTS_LIMIT,
+          after: after
+        };
       },
 
       _get_token_params: function (refresh_token) {
-        return { grant_type: "refresh_token", refresh_token: refresh_token };
+        return {
+          grant_type: "refresh_token",
+          refresh_token: refresh_token
+        };
       },
 
       /* Request acces token*/
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
-        this.fire('reddit-timeline-token', { access_token: this.token });
+        this.fire('reddit-timeline-token', {
+          access_token: this.token
+        });
         if (this.recall_subreddits) {
           this.$.get_subreddits.generateRequest();
           this.recall_subreddits = false;
@@ -893,8 +907,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = true;
             var splitted = item.data.media.oembed.thumbnail_url.split('/');
             item.video = splitted[splitted.length - 2];
-          }
-          else {
+          } else {
             item.detail = item.data.thumbnail;
             if (item.detail == 'default') {
               item.detail = this.component_base + "default_gif.png";
@@ -902,8 +915,7 @@ Polymer component to show your favourite subreddits feed
             item.hasVideo = false;
           }
           has = true;
-        }
-        else if (item.data.preview) {
+        } else if (item.data.preview) {
           if (item.data.preview.images[0].variants.gif) {
             item.media = item.data.preview.images[0].variants.gif.source.url;
             item.detail = item.data.thumbnail;
@@ -940,8 +952,7 @@ Polymer component to show your favourite subreddits feed
           this.$.feed_template.render();
           this.after = this.cache[this.cursor + 1].after;
           this.feed = this.cache[this.cursor + 1].feed;
-        }
-        else {
+        } else {
           this.cache[this.cursor] = {};
           this.cache[this.cursor].after = this.after;
           this.cache[this.cursor].feed = this.feed;
@@ -987,12 +998,8 @@ Polymer component to show your favourite subreddits feed
       },
 
       attached: function () {
-        this.$['dropdown-content'].style.right = "-155px";
+        console.log("MIRAR!!!! Esto se imprime");
       },
-
-
-
-
     });
   </script>
 </dom-module>
