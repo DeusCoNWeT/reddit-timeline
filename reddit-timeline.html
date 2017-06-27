@@ -606,7 +606,6 @@ Polymer component to show your favourite subreddits feed
           </div>
         </div>
       </template>
-    </div>
     <template is="dom-if" if="[[!feed.length]]">
       <div class="cssload-thecube">
         <div class="cssload-cube cssload-c1"></div>
@@ -651,8 +650,8 @@ Polymer component to show your favourite subreddits feed
             <span class="comments">{{words.comments}}: {{item.data.num_comments}}</span>
           </a>
       </div>
-
     </div>
+  </div>
   </template>
 
   <script>
