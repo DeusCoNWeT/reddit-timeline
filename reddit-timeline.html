@@ -813,13 +813,9 @@ Polymer component to show your favourite subreddits feed
       /* Request acces token*/
       _token_received: function (event, detail) {
         this.token = detail.response.access_token;
-<<<<<<< HEAD
         this.fire('reddit-timeline-token', {
           access_token: this.token
         });
-=======
-        this.fire('reddit-timeline-token', { access_token: this.token });
->>>>>>> a3f96d7dabf5bb6e1f439001e741ea27985510a3
         window.setTimeout(function () {
           if (this.recall_subreddits) {
             this.$.get_subreddits.generateRequest();
