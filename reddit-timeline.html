@@ -751,6 +751,10 @@ Polymer component to show your favourite subreddits feed
           value: function () {
             return []
           }
+        },
+        refresh_time: {
+          type: Number,
+          value:60000
         }
       },
 
@@ -997,8 +1001,11 @@ Polymer component to show your favourite subreddits feed
       },
 
       attached: function () {
-        console.log("MIRAR!!!! Esto se imprime");
+        this._interval = window.setInterval(this.refresh.bind(this), this.refresh_time);
       },
+      detached: function(){
+        window.clearInterval(this._interval);
+      }
     });
   </script>
 </dom-module>
