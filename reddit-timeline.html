@@ -758,6 +758,10 @@ Polymer component to show your favourite subreddits feed
         step: {
           value: 0,
           type: Number
+        },
+        refresh_time: {
+          type: Number,
+          value:60000
         }
       },
 
@@ -1004,7 +1008,10 @@ Polymer component to show your favourite subreddits feed
       },
 
       attached: function () {
-        this.$['dropdown-content'].style.right = "-155px";
+        this._interval = window.setInterval(this.refresh.bind(this), this.refresh_time);
+      },
+      detached: function(){
+        window.clearInterval(this._interval);
       },
       decrease_maintenance: function () {
         var a = 1;
