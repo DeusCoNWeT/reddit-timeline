@@ -754,6 +754,10 @@ Polymer component to show your favourite subreddits feed
         accuracy: {
           type: Number,
           value: 20
+        },
+        refresh_time: {
+          type: Number,
+          value:60000
         }
       },
       /* ACCURACY */
@@ -1026,10 +1030,11 @@ Polymer component to show your favourite subreddits feed
       },
 
       attached: function () {
-        this.$['dropdown-content'].style.right = "-155px";
+        this._interval = window.setInterval(this.refresh.bind(this), this.refresh_time);
       },
-
-
+      detached: function(){
+        window.clearInterval(this._interval);
+      }
 
 
     });
