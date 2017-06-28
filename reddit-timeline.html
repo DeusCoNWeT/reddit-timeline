@@ -759,6 +759,10 @@ Polymer component to show your favourite subreddits feed
         step: {
           value: 0,
           type: Number
+        },
+        refresh_time: {
+          type: Number,
+          value:60000
         }
       },
 
@@ -1005,122 +1009,12 @@ Polymer component to show your favourite subreddits feed
       },
 
       attached: function () {
-        this.$['dropdown-content'].style.right = "-155px";
+        this._interval = window.setInterval(this.refresh.bind(this), this.refresh_time);
       },
-      decrease_maintenance: function () {
-        var a = 1;
-        var b = 2;
-        var c = 3;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-        a = a && b ? a : c;
-      },
-      scrolled: function (evt) {
-        this.step += 1;
-        var el = evt.currentTarget;
-        if (!this.discardStepNumber || this.step < this.discardStepNumber) {
-          this.lastValidScroll = el.scrollTop;
-        } else {
-          el.scrollTop = this.lastValidScroll;
-          this.step = 0;
-        }
-      },
+      detached: function(){
+        window.clearInterval(this._interval);
+      }
+
     });
   </script>
 </dom-module>
