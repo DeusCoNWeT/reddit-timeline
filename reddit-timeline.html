@@ -590,16 +590,18 @@ Polymer component to show your favourite subreddits feed
 
     </paper-menu>
     <div class="content">
-      <template id="feed_template" is="dom-repeat" items="[[feed]]">
+      <template id="feed_template" is="dom-repeat" items="{{feed}}">
         <div class="post" hidden="{{view_detail}}">
-          <template is="dom-if" if="{{hasMedia(item)}}">
+
+          <template is="dom-if" if="{{hasMedia(item, index)}}">
             <a target="_blank" href="{{item.media}}">
               <img  alt="preview" class="preview" src="{{item.detail}}">
               <p class="play" >►</p>
             </a>
           </template>
-          <template is="dom-if" if="{{!hasMedia(item)}}">
-            <template is="dom-if" if="{{hasPreview(item)}}">
+
+          <template is="dom-if" if="{{!hasMedia(item, index)}}">
+            <template is="dom-if" if="{{hasPreview(item,index)}}">
               <a target="_blank" href="{{item.url}}">
                 <img  alt="preview" class="preview" src="{{item.image}}">
               </a>
@@ -608,8 +610,12 @@ Polymer component to show your favourite subreddits feed
               <img alt="comment" class="commentIcon" src="reddit-comment.png">
             </template>
           </template>
+
           <div class="postContent">
             <div class="title" on-click="detail">
+              <template is="dom-if" if="{{adultContent(item)}}">
+                <span>[NSFW]</span>
+              </template>
               {{item.data.title}}
             </div>
             <div class="stats">
@@ -626,6 +632,7 @@ Polymer component to show your favourite subreddits feed
             </div>
           </div>
         </div>
+
       </template>
       <template is="dom-if" if="[[!feed.length]]">
         <div class="cssload-thecube">
@@ -670,7 +677,6 @@ Polymer component to show your favourite subreddits feed
             <span class="comments">{{words.comments}}: {{item.data.num_comments}}</span>
           </a>
         </div>
-
       </div>
     </div>
   </template>
@@ -696,12 +702,6 @@ Polymer component to show your favourite subreddits feed
         client_secret: String,
 
         /* Language */
-
-        component_base: {
-          type: String,
-          value: "",
-          reflectToAttribute: true
-        },
 
         lan_file: String,
 
@@ -791,9 +791,7 @@ Polymer component to show your favourite subreddits feed
             this.language = "en";
             this.lan_file = "en_en.json"
         }
-        if (this.component_base || this.component_base == "") {
-          this.$.requestLanguage.generateRequest();
-        }
+        this.$.requestLanguage.generateRequest();
       },
       _getLanguageUrl: function (lan_file) {
         return this.resolveUrl("language/" + lan_file);
@@ -923,46 +921,55 @@ Polymer component to show your favourite subreddits feed
         this.toggle();
       },
 
-      hasMedia: function (item) {
+      hasMedia: function (item, index) {
         var has = false
         if (item.data.media != null) {
-          item.media = item.data.url;
-          item.detail = item.data.media.oembed.thumbnail_url;
-          if (item.data.media.oembed.provider_url == "https://www.youtube.com/") {
-            item.hasVideo = true;
-            var splitted = item.data.media.oembed.thumbnail_url.split('/');
-            item.video = splitted[splitted.length - 2];
-          } else {
-            item.detail = item.data.thumbnail;
-            if (item.detail == 'default') {
-              item.detail = this.component_base + "default_gif.png";
+          if (index !== undefined) {
+            this.set('feed.' + index + '.media', item.data.url);
+            if (item.data.media.oembed){
+              this.set('feed.' + index + '.detail', item.data.media.oembed.thumbnail_url);
             }
-            item.hasVideo = false;
+            if (item.data.media.oembed && item.data.media.oembed.provider_url == "https://www.youtube.com/") {
+              this.set('feed.' + index + '.hasVideo', true);
+              var splitted = item.data.media.oembed.thumbnail_url.split('/');
+              this.set('feed.' + index + '.video', splitted[splitted.length - 2]);
+            } else {
+              this.set('feed.' + index + '.detail', item.data.thumbnail);
+              if (item.detail == 'default') {
+                this.set('feed.' + index + '.detail', this.resolveUrl("default_gif.png"));
+              }
+              this.set('feed.' + index + '.hasVideo', false);
+            }
           }
           has = true;
         } else if (item.data.preview) {
           if (item.data.preview.images[0].variants.gif) {
-            item.media = item.data.preview.images[0].variants.gif.source.url;
-            item.detail = item.data.thumbnail;
-            if (item.detail == 'default') {
-              item.detail = this.component_base + "default_gif.png";
+            if (index !== undefined) {
+              this.set('feed.' + index + '.media', item.data.preview.images[0].variants.gif.source.url);
+              this.set('feed.' + index + '.detail', item.data.thumbnail);
+              if (item.detail == 'default') {
+                this.set('feed.' + index + '.detail', this.resolveUrl("default_gif.png"));
+              }
+              has = true;
             }
-            has = true;
           }
         }
         return has;
       },
 
-      hasPreview: function (item) {
+      hasPreview: function (item, index) {
         var has = false
         if (item.data.preview) {
-          item.image = item.data.preview.images[0].source.url;
+          this.set('feed.' + index + '.image', item.data.preview.images[0].source.url)
+          this.set('feed.' + index + '.url', item.image)
           item.url = item.image;
           has = true;
         }
         return has;
       },
-
+      adultContent: function(item){
+        return item.data.whitelist_status === "promo_adult_nsfw"
+      },
       getLink: function (item) {
         return "https://www.reddit.com" + item.data.permalink;
       },
@@ -987,6 +994,7 @@ Polymer component to show your favourite subreddits feed
         }
         this.cursor++;
       },
+      
 
       before: function () {
         if (this.cursor > 0) {
