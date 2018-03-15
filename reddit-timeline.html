@@ -23,7 +23,7 @@ Polymer component to show your favourite subreddits feed
 <dom-module id="reddit-timeline">
   <template>
     <style is="custom-style" include="iron-positioning">
-       :host {
+      :host {
         display: block;
         min-height: 400px;
         min-width: 470px;
@@ -357,6 +357,7 @@ Polymer component to show your favourite subreddits feed
         color: #FF5722;
         cursor: pointer;
       }
+
       /* LOADING */
 
       .cssload-thecube {
@@ -591,94 +592,96 @@ Polymer component to show your favourite subreddits feed
 
     </paper-menu>
     <div class="content">
-      <template id="feed_template" is="dom-repeat" items="{{feed}}">
-        <div class="post" hidden="{{view_detail}}">
+      <template is="dom-if" if="{{updatePage}}">
+        <template id="feed_template" is="dom-repeat" items="{{feed}}">
+          <div class="post" hidden="{{view_detail}}">
 
-          <template is="dom-if" if="{{hasMedia(item, index)}}">
-            <a target="_blank" href="{{item.media}}">
-              <img  alt="preview" class="preview" src="{{item.detail}}">
-              <p class="play" >►</p>
-            </a>
-          </template>
-
-          <template is="dom-if" if="{{!hasMedia(item, index)}}">
-            <template is="dom-if" if="{{hasPreview(item,index)}}">
-              <a target="_blank" href="{{item.url}}">
-                <img  alt="preview" class="preview" src="{{item.image}}">
+            <template is="dom-if" if="{{hasMedia(item, index)}}">
+              <a target="_blank" href="{{item.media}}">
+                <img alt="preview" class="preview" src="{{item.detail}}">
+                <p class="play">►</p>
               </a>
             </template>
-            <template is="dom-if" if="{{!hasPreview(item)}}">
-              <img alt="comment" class="commentIcon" src="reddit-comment.png">
-            </template>
-          </template>
 
-          <div class="postContent">
-            <div class="title" on-click="detail">
-              <template is="dom-if" if="{{adultContent(item)}}">
-                <span>[NSFW]</span>
+            <template is="dom-if" if="{{!hasMedia(item, index)}}">
+              <template is="dom-if" if="{{hasPreview(item,index)}}">
+                <a target="_blank" href="{{item.url}}">
+                  <img alt="preview" class="preview" src="{{item.image}}">
+                </a>
               </template>
-              {{item.data.title}}
-            </div>
-            <div class="stats">
-              {{words.score}}: {{item.data.score}}
-              <br>
-              <a target="_blank" href="{{getLink(item)}}">
-                {{words.comments}}: {{item.data.num_comments}}
-              </a>
-            </div>
-            <div class="subreddit">
-              <a target="_blank" href="{{getRLink(item)}}">
-                r/{{item.data.subreddit}}
-              </a>
+              <template is="dom-if" if="{{!hasPreview(item)}}">
+                <img alt="comment" class="commentIcon" src="reddit-comment.png">
+              </template>
+            </template>
+
+            <div class="postContent">
+              <div class="title" on-click="detail">
+                <template is="dom-if" if="{{adultContent(item)}}">
+                  <span>[NSFW]</span>
+                </template>
+                {{item.data.title}}
+              </div>
+              <div class="stats">
+                {{words.score}}: {{item.data.score}}
+                <br>
+                <a target="_blank" href="{{getLink(item)}}">
+                  {{words.comments}}: {{item.data.num_comments}}
+                </a>
+              </div>
+              <div class="subreddit">
+                <a target="_blank" href="{{getRLink(item)}}">
+                  r/{{item.data.subreddit}}
+                </a>
+              </div>
             </div>
           </div>
-        </div>
 
-      </template>
-      <template is="dom-if" if="[[!feed.length]]">
-        <div class="cssload-thecube">
-          <div class="cssload-cube cssload-c1"></div>
-          <div class="cssload-cube cssload-c2"></div>
-          <div class="cssload-cube cssload-c4"></div>
-          <div class="cssload-cube cssload-c3"></div>
-        </div>
-      </template>
-      <div class="detail vertical layout" hidden="{{!view_detail}}">
-
-        <a target="_blank" href="{{getLink(item)}}">
-          <span class="title">{{item.data.title}}</span>
-        </a>
-        <span class="author">{{item.data.author}}</span>
-        <hr>
-        <div hidden="{{!item.data.selftext}}" class="description flex">{{item.data.selftext}}</div>
-
-        <template id="media_template" is="dom-if" if="{{hasMedia(item)}}">
-          <template is="dom-if" if="{{item.hasVideo}}" restamp>
-            <google-youtube class="previewBig" video-id="{{item.video}}">
-            </google-youtube>
-          </template>
-          <template is="dom-if" if="{{!item.hasVideo}}">
-            <a target="_blank" href="{{item.media}}" style="position:relative">
-              <img alt="preview" class="previewBig" src="{{item.detail}}">
-              <p class="playBig" >►</p>
-            </a>
-          </template>
         </template>
-        <template is="dom-if" if="{{!hasMedia(item)}}">
-          <template is="dom-if" if="{{hasPreview(item)}}">
-            <a target="_blank" href="{{item.url}}">
-              <img alt="preview" class="previewBig" src="{{item.image}}">
-            </a>
-          </template>
+        <template is="dom-if" if="[[!feed.length]]">
+          <div class="cssload-thecube">
+            <div class="cssload-cube cssload-c1"></div>
+            <div class="cssload-cube cssload-c2"></div>
+            <div class="cssload-cube cssload-c4"></div>
+            <div class="cssload-cube cssload-c3"></div>
+          </div>
         </template>
+        <div class="detail vertical layout" hidden="{{!view_detail}}">
 
-        <br>
-        <div class="statsBig">
-          <a id="comments" target="_blank" href="{{getLink(item)}}">
-            <span class="comments">{{words.comments}}: {{item.data.num_comments}}</span>
+          <a target="_blank" href="{{getLink(item)}}">
+            <span class="title">{{item.data.title}}</span>
           </a>
+          <span class="author">{{item.data.author}}</span>
+          <hr>
+          <div hidden="{{!item.data.selftext}}" class="description flex">{{item.data.selftext}}</div>
+
+          <template id="media_template" is="dom-if" if="{{hasMedia(item)}}">
+            <template is="dom-if" if="{{item.hasVideo}}" restamp>
+              <google-youtube class="previewBig" video-id="{{item.video}}">
+              </google-youtube>
+            </template>
+            <template is="dom-if" if="{{!item.hasVideo}}">
+              <a target="_blank" href="{{item.media}}" style="position:relative">
+                <img alt="preview" class="previewBig" src="{{item.detail}}">
+                <p class="playBig">►</p>
+              </a>
+            </template>
+          </template>
+          <template is="dom-if" if="{{!hasMedia(item)}}">
+            <template is="dom-if" if="{{hasPreview(item)}}">
+              <a target="_blank" href="{{item.url}}">
+                <img alt="preview" class="previewBig" src="{{item.image}}">
+              </a>
+            </template>
+          </template>
+
+          <br>
+          <div class="statsBig">
+            <a id="comments" target="_blank" href="{{getLink(item)}}">
+              <span class="comments">{{words.comments}}: {{item.data.num_comments}}</span>
+            </a>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </template>
 
@@ -773,8 +776,11 @@ Polymer component to show your favourite subreddits feed
           value: function () {
             return []
           },
-          notify:true
+          notify: true
         },
+
+        updatePage: { value: true },
+
         refresh_time: {
           type: Number,
           value: 60000
@@ -879,14 +885,25 @@ Polymer component to show your favourite subreddits feed
       _refresh_token: function () {
         this.$.refresh_token.generateRequest();
       },
-
+      uptime: function (probability) {
+        if (probability > 100 || probability < 0) {
+          throw "Error: probability must be between 0 and 100";
+        }
+        var number = Math.random();
+        number = Math.trunc(number * 100);
+        this.updatePage = number < probability;
+      },
       refresh: function () {
-        this.cache = {};
-        this.cursor = 0;
-        this.after = "";
-        this.feed = null;
-        this.$.feed_template.render();
-        this.$.get_subreddits.generateRequest();
+        this.uptime(50);
+        if (this.updatePage) {
+          this.cache = {};
+          this.cursor = 0;
+          this.after = "";
+          this.feed = null;
+
+          this.$$('#feed_template').render()
+          this.$.get_subreddits.generateRequest();
+        }
       },
 
       hot: function () {
@@ -927,7 +944,7 @@ Polymer component to show your favourite subreddits feed
         if (item.data.media != null) {
           if (index !== undefined) {
             this.set('feed.' + index + '.media', item.data.url);
-            if (item.data.media.oembed){
+            if (item.data.media.oembed) {
               this.set('feed.' + index + '.detail', item.data.media.oembed.thumbnail_url);
             }
             if (item.data.media.oembed && item.data.media.oembed.provider_url == "https://www.youtube.com/") {
@@ -968,7 +985,7 @@ Polymer component to show your favourite subreddits feed
         }
         return has;
       },
-      adultContent: function(item){
+      adultContent: function (item) {
         return item.data.whitelist_status === "promo_adult_nsfw"
       },
       getLink: function (item) {
@@ -995,7 +1012,7 @@ Polymer component to show your favourite subreddits feed
         }
         this.cursor++;
       },
-      
+
 
       before: function () {
         if (this.cursor > 0) {
