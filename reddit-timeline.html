@@ -561,7 +561,7 @@ Polymer component to show your favourite subreddits feed
       handle-as='json' on-response="_subreddits_received" on-error="_subreddit_error">
     </iron-ajax>
 
-    <iron-ajax id="get_posts" url="https://oauth.reddit.com/r/{{subreddit}}/{{list}}" headers="{{_api_headers}}" params="{{_posts_params}}"
+    <iron-ajax id="get_posts"  headers="{{_api_headers}}" params="{{_posts_params}}"
       handle-as='json' on-response="_posts_received" on-error="_posts_error">
     </iron-ajax>
 
@@ -590,7 +590,7 @@ Polymer component to show your favourite subreddits feed
       <paper-button raised class="item" on-click="top">{{words.top}}</paper-button>
 
     </paper-menu>
-    <div class="content">
+    <div class="content" >
       <template id="feed_template" is="dom-repeat" items="{{feed}}">
         <div class="post" hidden="{{view_detail}}">
 
